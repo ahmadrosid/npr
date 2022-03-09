@@ -4,8 +4,8 @@ use std::result::Result as ResultError;
 use std::{fs::File, path::Path};
 
 use fuzzy_matcher::clangd::ClangdMatcher;
+
 use fuzzy_matcher::FuzzyMatcher;
-use termion::style::{Bold, Reset};
 
 #[cfg(not(feature = "compact"))]
 type IndexType = usize;
@@ -15,6 +15,7 @@ type IndexType = u32;
 #[derive(Default)]
 pub struct Document {
     pub scripts: HashMap<String, String>,
+    pub data_map: HashMap<String, String>,
     pub matcher: ClangdMatcher,
 }
 
@@ -46,23 +47,33 @@ impl Document {
         }
 
         let mut data: HashMap<String, String> = HashMap::new();
+        let mut data_map: HashMap<String, String> = HashMap::new();
         for (key, val) in script.unwrap() {
             let val = val.as_str().unwrap().to_string();
-            data.insert(key.to_string(), val);
+            data.insert(key.to_string(), val.to_string());
+            data_map.insert( format!("{} : {}",key, val.to_string()), key.to_string());
         }
 
         Ok(Document {
             scripts: data,
+            data_map,
             matcher: ClangdMatcher::default(),
         })
     }
 
-    pub fn search(&self, query: &str) {
+    pub fn get_script(&self, key: &str) -> Option<&String> {
+        self.data_map.get(key)
+    }
+
+    pub fn search(&self, query: &str) -> Vec<String> {
+        let mut data = vec![];
         for (k, v) in &self.scripts {
             if let Some((_, indices)) = self.matcher.fuzzy_indices(k, query) {
-                println!("{}: {}", Self::wrap_matches(k, &indices), v);
+                let s = format!("{} : {}", Self::wrap_matches(k, &indices), v);
+                data.push(s);
             }
         }
+        data
     }
 
     fn wrap_matches(line: &str, indices: &[IndexType]) -> String {
@@ -71,16 +82,19 @@ impl Document {
         for (idx, ch) in line.chars().enumerate() {
             let next_id = **peekable.peek().unwrap_or(&&(line.len() as IndexType));
             if next_id == (idx as IndexType) {
-                ret.push_str(
-                    format!(
-                        "{}{}{}{}",
-                        Bold,
-                        termion::color::Fg(termion::color::Green),
-                        ch,
-                        Reset
-                    )
-                    .as_str(),
-                );
+                // Fix me: figure out how to make text highligting work with tuikit.
+                // ret.push_str(
+                //     format!(
+                //         "{}{}{}{}",
+                //         Bold,
+                //         termion::color::Fg(termion::color::Green),
+                //         ch,
+                //         Reset
+                //     )
+                //     .as_str(),
+                // );
+
+                ret.push(ch);
                 peekable.next();
             } else {
                 ret.push(ch);

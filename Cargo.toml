@@ -1,0 +1,12 @@
+[package]
+name = "npr"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+fuzzy-matcher = "0.3.7"
+serde = "1.0.136"
+serde_json = "1.0.79"
+termion = "1.5.6"

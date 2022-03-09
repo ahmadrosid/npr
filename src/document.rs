@@ -25,16 +25,16 @@ impl Document {
             return Err(format!("No {} found!", path));
         }
 
-        let reader = File::open(path).expect(&format!("Failed to read {}", path));
+        let reader = File::open(path).unwrap_or_else(|_| panic!("Failed to read {}", path));
         let json: Result<Map<String, Value>> = serde_json::from_reader(reader);
         if let Err(error) = json {
-            return Err(format!("Failed parsing json: '{}'!", error.to_string()));
+            return Err(format!("Failed parsing json: '{}'!", error));
         }
 
         let data = json.unwrap();
         let script = data.get("scripts");
         if script.is_none() {
-            return Err(format!("Key scripts not found!"));
+            return Err(String::from("Key scripts not found!"));
         }
 
         let script = script.unwrap().as_object();
@@ -46,7 +46,7 @@ impl Document {
         }
 
         let mut data: HashMap<String, String> = HashMap::new();
-        for (key, val) in script.unwrap().into_iter() {
+        for (key, val) in script.unwrap() {
             let val = val.as_str().unwrap().to_string();
             data.insert(key.to_string(), val);
         }
@@ -58,9 +58,9 @@ impl Document {
     }
 
     pub fn search(&self, query: &str) {
-        for (k, v) in self.scripts.iter() {
-            if let Some((_, indices)) = self.matcher.fuzzy_indices(&k, &query) {
-                println!("{}: {}", Self::wrap_matches(&k, &indices), v);
+        for (k, v) in &self.scripts {
+            if let Some((_, indices)) = self.matcher.fuzzy_indices(k, query) {
+                println!("{}: {}", Self::wrap_matches(k, &indices), v);
             }
         }
     }

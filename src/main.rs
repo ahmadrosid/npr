@@ -4,7 +4,7 @@ use document::Document;
 use termion::color;
 
 pub fn main() {
-    let query = std::env::args().nth(1).unwrap_or("".to_string());
+    let query = std::env::args().nth(1).unwrap_or_else(||"".to_string());
     let doc = Document::parse_script();
     if let Err(ref err) = doc {
         print!("{}", color::Fg(color::Red));

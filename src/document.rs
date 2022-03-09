@@ -51,7 +51,7 @@ impl Document {
         for (key, val) in script.unwrap() {
             let val = val.as_str().unwrap().to_string();
             data.insert(key.to_string(), val.to_string());
-            data_map.insert( format!("{} : {}",key, val.to_string()), key.to_string());
+            data_map.insert(format!("{} : {}", key, val.to_string()), key.to_string());
         }
 
         Ok(Document {

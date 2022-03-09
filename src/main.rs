@@ -21,14 +21,10 @@ fn main() {
         let _ = term.print_with_attr(row, 0, &err, attr);
     };
 
-    while let Ok(ev) = term.poll_event() {
-        let data = doc.as_ref().unwrap().search(&query);
-        let max_height = data.len();
-        let _ = term.clear();
-        for (i, v) in data.iter().enumerate() {
-            let _ = term.print(i + 1, 0, v);
-        }
+    let mut data = doc.as_ref().unwrap().search(&query);
+    let mut max_height = data.len();
 
+    while let Ok(ev) = term.poll_event() {
         match ev {
             Event::Key(Key::ESC) => break,
             Event::Key(Key::Enter) => {
@@ -49,6 +45,13 @@ fn main() {
                 }
             }
             _ => {}
+        }
+
+        data = doc.as_ref().unwrap().search(&query);
+        max_height = data.len();
+        let _ = term.clear();
+        for (i, v) in data.iter().enumerate() {
+            let _ = term.print(i + 1, 0, v);
         }
 
         let display_query = format!("> {}", query);

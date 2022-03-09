@@ -7,12 +7,6 @@ use fuzzy_matcher::clangd::ClangdMatcher;
 
 use fuzzy_matcher::FuzzyMatcher;
 
-#[cfg(not(feature = "compact"))]
-type IndexType = usize;
-#[cfg(feature = "compact")]
-type IndexType = u32;
-
-#[derive(Default)]
 pub struct Document {
     pub scripts: HashMap<String, String>,
     pub matcher: ClangdMatcher,

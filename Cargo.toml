@@ -6,7 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+crossterm = "0.23.0"
 fuzzy-matcher = "0.3.7"
 serde = "1.0.136"
 serde_json = "1.0.79"
+tui = "0.17.0"
 tuikit = "0.4.5"
+unicode-width = "0.1.9"

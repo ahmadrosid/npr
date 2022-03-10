@@ -42,7 +42,7 @@ impl App {
         if let Some(key) = self.messages.get(self.index) {
             if let Some(script) = self.doc.get_script(key) {
                 let mut child = Command::new("npm").arg("run").arg(script).spawn().unwrap();
-                assert!(child.wait().unwrap().success());
+                let _ = child.wait().unwrap().success();
             }
         }
     }
